@@ -1,10 +1,14 @@
 ﻿@page "/clientes"
 @rendermode InteractiveServer
 @inject IClienteService ClienteService
-<h3>Clientes
+<h3>
+    Clientes
     <span @onclick="Agregar" class="btn btn-outline-success">+</span>
 </h3>
-@if(ShowForm){
+
+
+@if (ShowForm)
+{
 
     <div class="card">
         <div class="card-header">@Titulo cliente</div>
@@ -36,6 +40,11 @@
 }
 else
 {
+    <div class="input-group mb-3">
+        <input type="text" @bind="Filtro" class="form-control" placeholder="Buscar" aria-label="Buscar">
+        <button @onclick="Consultar" class="btn btn-primary" type="button">Buscar</button>
+    </div>
+
     <table class="table">
         <thead>
             <tr>
@@ -62,12 +71,19 @@ else
                     <th>@item.LimiteDeCredito.ToString("N2")</th>
                 </tr>
             }
+            @if (!Listado.Any())
+            {
+                <tr>
+                    <th colspan="5" class="text-center text-warning">Sin registros encontrados</th>
+                </tr>
+            }
         </tbody>
     </table>
 }
 
 @code {
     public string Titulo { get; set; } = "";
+    public string Filtro { get; set; } = "";
     public ClienteDto Request { get; set; } = new();
     public List<ClienteDto> Listado { get; set; } = [];
 
@@ -77,21 +93,24 @@ else
     }
     private async Task Consultar()
     {
-        Listado = await ClienteService.Consultar("");
+        Listado = await ClienteService.Consultar(Filtro);
     }
 
     public bool ShowForm { get; set; } = false;
-    private void Toggle() => ShowForm = !ShowForm; 
-    private void Clear(){
+    private void Toggle() => ShowForm = !ShowForm;
+    private void Clear()
+    {
         Request = new();
         Toggle();
     }
-    private void Agregar(){
+    private void Agregar()
+    {
         Clear();
         Titulo = "Registrar";
     }
-    private async Task Add(){
-        var result = Request.Id == 0?
+    private async Task Add()
+    {
+        var result = Request.Id == 0 ?
             await ClienteService.Crear(Request) :
             await ClienteService.Modificar(Request);
         if (result)
@@ -108,11 +127,13 @@ else
         .Where(c => c.Id == Id)
         .FirstOrDefault() ?? new();
     }
-    private async Task Eliminar(int Id){
+    private async Task Eliminar(int Id)
+    {
         var result = await ClienteService.Eliminar(Id);
         if (result)
         {
             await Consultar();
         }
     }
+
 }

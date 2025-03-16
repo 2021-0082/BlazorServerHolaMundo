@@ -15,4 +15,10 @@ namespace ERP.Web.Domain.Dto
         public decimal LimiteDeCredito { get; set; }//Si
         public PersonaDto DatosPersonales { get; set; } = new PersonaDto();
     }
+    public class EmpleadoDto{
+		public int Id { get; set; }
+		public int PersonaId { get; set; }
+		public decimal Sueldo { get; set; }
+		public PersonaDto DatosPersonales { get; set; } = new PersonaDto();
+	}
 }
